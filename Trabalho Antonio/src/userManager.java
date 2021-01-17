@@ -1,16 +1,19 @@
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class userManager {
 
     private HashMap<String,Utilizador> utilizadores; // Key: username | Value: Objeto do Utilizador
     private Integer DIM; // Dimensão do mapa
     private ArrayList<Utilizador>[][] mapa; //Localizacao dos users (talvez mudar)
+    private ReentrantLock userLock; //Lock do hashmap dos utilizadores
 
     public userManager() {
         this.utilizadores = new HashMap<String, Utilizador>();
         this.DIM = 100;
         this.mapa = new ArrayList[DIM][DIM];
+        this.userLock = new ReentrantLock();
 
     }
 
@@ -20,13 +23,18 @@ public class userManager {
      * @param password Password do utilizador
      * @return Estado de conclusão
      */
-    public synchronized boolean registarUtilizador(String username,String password){
-        if (!this.utilizadores.containsKey(username)){
-            Utilizador user = new Utilizador(username,password);
-            this.utilizadores.put(username,user);
-            return true;
+    public boolean registarUtilizador(Utilizador user){
+        this.userLock.lock();
+        try {
+            if (!this.utilizadores.containsKey(user.getUsername())) {
+                this.utilizadores.put(user.getUsername(), user);
+                return true;
+            }
+            return false;
         }
-        return false;
+        finally {
+            this.userLock.unlock();
+        }
     }
 
     /**

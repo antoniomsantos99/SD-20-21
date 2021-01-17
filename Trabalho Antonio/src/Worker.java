@@ -8,8 +8,8 @@ public class Worker extends Thread implements Runnable {
     private Socket clSocket;
     private userManager master;
     private Utilizador utilizador;
-    private BufferedReader in;
-    private BufferedWriter out;
+    private DataInputStream in;
+    private DataOutputStream out;
 
 
     /**
@@ -22,61 +22,60 @@ public class Worker extends Thread implements Runnable {
         try {
             this.clSocket = clsocket;
             this.master = master;
-            this.in = new BufferedReader(new InputStreamReader(clSocket.getInputStream()));
-            this.out = new BufferedWriter(new OutputStreamWriter(clSocket.getOutputStream()));
+            this.in = new DataInputStream(new BufferedInputStream(clsocket.getInputStream()));
+            this.out = new DataOutputStream(new BufferedOutputStream(clsocket.getOutputStream()));
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    /**
-     * Escreve uma mensagem no socket
-     *
-     * @param msg Mensagem
-     */
-    public void writeSocket(String msg) {
-        try {
-            out.write(msg);
-            out.newLine();
-            out.flush();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
     public void run() {
         String res, pass, user = null;
         try {
-            while ((res = in.readLine()) != null) {
+            while ((res = in.readUTF()) != null) {
                 switch(res){
 
                     case("registo"):
-                        user = in.readLine();
-                        pass = in.readLine();
-                        if(this.master.registarUtilizador(user,pass)){
-                            this.master.loginUtilizador(user,pass);
+                        System.out.println("Teste");
+                        if(this.master.registarUtilizador(new Utilizador().deserialize(this.in))){
                             this.utilizador = this.master.getUser(user);
-                            writeSocket("Registo com sucesso!");
+                            out.writeUTF("Registo com sucesso!");
+                            out.flush();
                         }
                         else {
-                            writeSocket("Registo sem sucesso");
+                            out.writeUTF("Registo sem sucesso");
+                            out.flush();
                         }
+                        break;
 
                     case("login"):
-                        user = in.readLine();
-                        pass = in.readLine();
+                        user = in.readUTF();
+                        pass = in.readUTF();
 
-                        if(this.master.loginUtilizador(user,pass))
-                            writeSocket("Login com sucesso");
-                        else{
-                            if (this.master.getUser(user) == null)
-                                writeSocket("User não existe.");
-                            else if (this.master.getUser(user).checkLock())
-                                writeSocket("User já em utilização.");
-                            else
-                                writeSocket("Password incorreta.");
+                        if(this.master.loginUtilizador(user,pass)) {
+                            this.utilizador = this.master.getUser(user);
+                            out.writeUTF("Login com sucesso!");
+                            out.flush();
                         }
+                        else{
+                            if (this.master.getUser(user) == null) {
+                                out.writeUTF("User não existe.");
+                                out.flush();
+                            }
+                            else if (this.master.getUser(user).checkLock()){
+                                out.writeUTF("User já em utilização.");
+                                out.flush();}
+                            else{
+                                out.writeUTF("Password incorreta.");
+                                out.flush();}
+                        }
+                        break;
 
+                    case("logout"):
+                        utilizador.unlockUser();
+                        utilizador = null;
+                        break;
 
                 }
             }
