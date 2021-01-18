@@ -29,17 +29,19 @@ public class Cliente {
         }
     }
 
-    public void signUser() throws IOException {
+    public boolean signUser() throws IOException {
         Scanner sc = new Scanner(System.in);
         System.out.print("Username: ");
         String user = sc.nextLine();
         System.out.print("Password: ");
         String pass = sc.nextLine();
         new Utilizador(user,pass).serialize(this.output);
-        System.out.println(this.input.readUTF());
+        String status = this.input.readUTF();
+        System.out.println(status);
+        return status.equals("Login com sucesso!") || status.equals("Registo com sucesso!");
     }
 
-    public void updatePos() throws IOException {
+    public void askPos() throws IOException {
         Scanner sc = new Scanner(System.in);
         System.out.println("Coordenada X: ");
         output.writeInt(sc.nextInt());
@@ -57,7 +59,7 @@ public class Cliente {
 
 
         while (loop) {
-            switch (m.run(new String[]{"Registar User", "Login User", "Logout User","Update position"})) {
+            switch (m.run(new String[]{"Registar User", "Login User", "Logout User","Update position","Check position"})) {
                 case 1:
                     c.output.writeUTF("registo");
                     c.output.flush();
@@ -66,10 +68,11 @@ public class Cliente {
                 case 2:
                     c.output.writeUTF("login");
                     c.output.flush();
-                    c.signUser();
-                    c.output.writeUTF("updatePos");
-                    c.output.flush();
-                    c.updatePos();
+                    if(c.signUser()) {
+                        c.output.writeUTF("updatePos");
+                        c.output.flush();
+                        c.askPos();
+                    }
                     break;
                 case 3:
                     c.output.writeUTF("logout");
@@ -79,7 +82,12 @@ public class Cliente {
                 case 4:
                     c.output.writeUTF("updatePos");
                     c.output.flush();
-                    c.updatePos();
+                    c.askPos();
+                    break;
+                case 5:
+                    c.output.writeUTF("checkPos");
+                    c.output.flush();
+                    c.askPos();
                     break;
             }
 

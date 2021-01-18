@@ -81,5 +81,10 @@ public class userManager {
         this.mapa[x][y].add(user);
         return true;
     }
+
+    public int checkPosition(int x, int y){
+        if(mapa[x][y] == null) return 0;
+        return mapa[x][y].size();
+    }
 }
 
