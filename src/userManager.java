@@ -11,7 +11,7 @@ public class userManager {
 
     public userManager() {
         this.utilizadores = new HashMap<String, Utilizador>();
-        this.DIM = 100;
+        this.DIM = 10;
         this.mapa = new ArrayList[DIM][DIM];
         this.userLock = new ReentrantLock();
 
@@ -19,8 +19,7 @@ public class userManager {
 
     /**
      * Regista um utilizador
-     * @param username Nome do utilizador
-     * @param password Password do utilizador
+     * @param user Objeto do utilizador
      * @return Estado de conclusão
      */
     public boolean registarUtilizador(Utilizador user){
@@ -43,7 +42,7 @@ public class userManager {
      * @param password Password utilizador
      * @return True se login com sucesso, false caso contrario
      */
-    public synchronized boolean loginUtilizador(String username, String password) {
+    public boolean loginUtilizador(String username, String password) {
         this.userLock.lock();
         try {
             if (this.utilizadores.containsKey(username)
@@ -65,9 +64,22 @@ public class userManager {
      * @param nome Nome do utilizador
      * @return Informação do utilizador
      */
-    public synchronized Utilizador getUser(String nome) {
+    public Utilizador getUser(String nome) {
         return utilizadores.get(nome);
     }
 
+    public Integer getDIM() {
+        return DIM;
+    }
+
+    public boolean updatePosition(Utilizador user,int x,int y){
+        if(mapa[x][y] == null) mapa[x][y] = new ArrayList<Utilizador>();
+        if(user.getPosicao() != null){
+            this.mapa[user.getPosicao().getX()][user.getPosicao().getY()].remove(user);
+        }
+        user.setPosicao(new Coordinates(x,y));
+        this.mapa[x][y].add(user);
+        return true;
+    }
 }
 

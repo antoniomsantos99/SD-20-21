@@ -32,6 +32,8 @@ public class Worker extends Thread implements Runnable {
 
     public void run() {
         String res, pass, user = null;
+        Coordinates pos = new Coordinates(0,0);
+
         boolean loop = true;
         try {
             while (loop && (res = in.readUTF()) != null) {
@@ -71,6 +73,22 @@ public class Worker extends Thread implements Runnable {
                                 out.flush();}
                         }
                         break;
+
+                    case("updatePos"):
+                        int x = in.readInt();
+                        int y = in.readInt();
+                        if(0<=x && x<master.getDIM() && 0<=y && y<master.getDIM()){
+                            master.updatePosition(utilizador,x,y);
+                            out.writeUTF("Posição atualizada!");
+                            out.flush();
+                        }
+                        else{
+                            out.writeUTF("Posição Invalida!");
+                            out.flush();
+                        }
+
+                        break;
+
 
                     case("logout"):
                         if(utilizador != null) {

@@ -39,6 +39,16 @@ public class Cliente {
         System.out.println(this.input.readUTF());
     }
 
+    public void updatePos() throws IOException {
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Coordenada X: ");
+        output.writeInt(sc.nextInt());
+        System.out.println("Coordenada Y: ");
+        output.writeInt(sc.nextInt());
+        output.flush();
+        System.out.println(this.input.readUTF());
+    }
+
 
     public static void main(String[] args) throws IOException {
         boolean loop = true;
@@ -47,7 +57,7 @@ public class Cliente {
 
 
         while (loop) {
-            switch (m.run(new String[]{"Registar User", "Login User", "Logout User"})) {
+            switch (m.run(new String[]{"Registar User", "Login User", "Logout User","Update position"})) {
                 case 1:
                     c.output.writeUTF("registo");
                     c.output.flush();
@@ -57,11 +67,19 @@ public class Cliente {
                     c.output.writeUTF("login");
                     c.output.flush();
                     c.signUser();
+                    c.output.writeUTF("updatePos");
+                    c.output.flush();
+                    c.updatePos();
                     break;
                 case 3:
                     c.output.writeUTF("logout");
                     loop = false;
                     c.output.flush();
+                    break;
+                case 4:
+                    c.output.writeUTF("updatePos");
+                    c.output.flush();
+                    c.updatePos();
                     break;
             }
 

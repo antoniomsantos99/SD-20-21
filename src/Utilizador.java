@@ -9,6 +9,7 @@ public class Utilizador {
     private String username;
     private String password;
     private Boolean estadoInfecao;
+    private Coordinates posicao;
     private ReentrantLock lockUser;
 
     /**
@@ -19,6 +20,7 @@ public class Utilizador {
     public Utilizador() {
         this.username = null;
         this.password = null;
+        this.posicao = null;
         this.estadoInfecao = false;
         this.lockUser = new ReentrantLock();
     }
@@ -32,6 +34,7 @@ public class Utilizador {
     public Utilizador(String username, String password) {
         this.username = username;
         this.password = password;
+        this.posicao = null;
         this.estadoInfecao = false;
         this.lockUser = new ReentrantLock();
     }
@@ -79,6 +82,14 @@ public class Utilizador {
         String username = in.readUTF();
         String password = in.readUTF();
         return new Utilizador(username, password);
+    }
+
+    public Coordinates getPosicao() {
+        return posicao;
+    }
+
+    public void setPosicao(Coordinates posicao) {
+        this.posicao = posicao;
     }
 }
 
