@@ -43,16 +43,21 @@ public class userManager {
      * @param password Password utilizador
      * @return True se login com sucesso, false caso contrario
      */
-    public synchronized boolean loginUtilizador(String username, String password){
-        if (this.utilizadores.containsKey(username)
-                && this.utilizadores.get(username).getPassword().equals(password)
-                && !this.utilizadores.get(username).checkLock()){
+    public synchronized boolean loginUtilizador(String username, String password) {
+        this.userLock.lock();
+        try {
+            if (this.utilizadores.containsKey(username)
+                    && this.utilizadores.get(username).getPassword().equals(password)
+                    && !this.utilizadores.get(username).checkLock()) {
 
-            this.utilizadores.get(username).lockUser();
+                this.utilizadores.get(username).lockUser();
 
-            return true;
+                return true;
+            }
+            return false;
+        } finally {
+            this.userLock.unlock();
         }
-        return false;
     }
 
     /**

@@ -1,6 +1,8 @@
 import java.io.*;
 import java.net.UnknownHostException;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class Cliente {
@@ -18,6 +20,7 @@ public class Cliente {
      */
     public Cliente(String hostname, int porta) {
         try {
+            this.username = null;
             this.socket = new Socket(hostname, porta);
             this.input = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
             this.output = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
@@ -33,8 +36,7 @@ public class Cliente {
         System.out.print("Password: ");
         String pass = sc.nextLine();
         new Utilizador(user,pass).serialize(this.output);
-        System.out.println(input.readUTF());
-
+        System.out.println(this.input.readUTF());
     }
 
 
@@ -43,19 +45,23 @@ public class Cliente {
         Cliente c = new Cliente("127.0.0.1", 12345);
         Menu m = new Menu();
 
+
         while (loop) {
             switch (m.run(new String[]{"Registar User", "Login User", "Logout User"})) {
                 case 1:
                     c.output.writeUTF("registo");
+                    c.output.flush();
                     c.signUser();
                     break;
                 case 2:
                     c.output.writeUTF("login");
+                    c.output.flush();
                     c.signUser();
                     break;
                 case 3:
                     c.output.writeUTF("logout");
                     loop = false;
+                    c.output.flush();
                     break;
             }
 

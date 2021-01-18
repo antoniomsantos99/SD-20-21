@@ -78,7 +78,6 @@ public class Utilizador {
     public static Utilizador deserialize(DataInputStream in) throws IOException {
         String username = in.readUTF();
         String password = in.readUTF();
-        System.out.println(username);
         return new Utilizador(username, password);
     }
 }

@@ -32,14 +32,13 @@ public class Worker extends Thread implements Runnable {
 
     public void run() {
         String res, pass, user = null;
+        boolean loop = true;
         try {
-            while ((res = in.readUTF()) != null) {
+            while (loop && (res = in.readUTF()) != null) {
                 switch(res){
 
                     case("registo"):
-                        System.out.println("Teste");
                         if(this.master.registarUtilizador(new Utilizador().deserialize(this.in))){
-                            this.utilizador = this.master.getUser(user);
                             out.writeUTF("Registo com sucesso!");
                             out.flush();
                         }
@@ -54,6 +53,7 @@ public class Worker extends Thread implements Runnable {
                         pass = in.readUTF();
 
                         if(this.master.loginUtilizador(user,pass)) {
+                            if(this.utilizador != null) this.utilizador.unlockUser();
                             this.utilizador = this.master.getUser(user);
                             out.writeUTF("Login com sucesso!");
                             out.flush();
@@ -73,8 +73,12 @@ public class Worker extends Thread implements Runnable {
                         break;
 
                     case("logout"):
-                        utilizador.unlockUser();
-                        utilizador = null;
+                        if(utilizador != null) {
+                            this.master.getUser(utilizador.getUsername()).unlockUser();
+                            utilizador = null;
+                        }
+                        clSocket.close();
+                        loop = false;
                         break;
 
                 }
