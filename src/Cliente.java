@@ -10,6 +10,7 @@ public class Cliente {
     private DataInputStream input;
     private DataOutputStream output;
     private String username;
+    private Menu m;
 
 
     /**
@@ -24,6 +25,7 @@ public class Cliente {
             this.socket = new Socket(hostname, porta);
             this.input = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
             this.output = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
+            this.m = new Menu();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -42,11 +44,8 @@ public class Cliente {
     }
 
     public void askPos() throws IOException {
-        Scanner sc = new Scanner(System.in);
-        System.out.println("Coordenada X: ");
-        output.writeInt(sc.nextInt());
-        System.out.println("Coordenada Y: ");
-        output.writeInt(sc.nextInt());
+        output.writeInt(m.run("Coordenada X: "));
+        output.writeInt(m.run("Coordenada Y: "));
         output.flush();
         System.out.println(this.input.readUTF());
     }
@@ -55,11 +54,11 @@ public class Cliente {
     public static void main(String[] args) throws IOException {
         boolean loop = true;
         Cliente c = new Cliente("127.0.0.1", 12345);
-        Menu m = new Menu();
+
 
 
         while (loop) {
-            switch (m.run(new String[]{"Registar User", "Login User", "Logout User","Update position","Check position"})) {
+            switch (c.m.run(new String[]{"Registar User", "Login User", "Logout User","Update position","Check position"})) {
                 case 1:
                     c.output.writeUTF("registo");
                     c.output.flush();

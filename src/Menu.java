@@ -15,11 +15,8 @@ public class Menu {
     public int run(String question){
         try{
             System.out.println(question);
-            System.out.println("[0] - No");
-            System.out.println("[1] - Yes");
             Scanner sc = new Scanner(System.in);
             int choice = sc.nextInt();
-            if(choice < 0 || choice > 1) throw new IllegalArgumentException();
             return choice;
         }catch(Exception e){
             System.out.println("Error: Invalid Input.");
