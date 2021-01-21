@@ -11,6 +11,7 @@ public class Cliente {
     private DataOutputStream output;
     private String username;
     private Menu m;
+    private boolean loggedIn;
 
 
     /**
@@ -26,6 +27,7 @@ public class Cliente {
             this.input = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
             this.output = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
             this.m = new Menu();
+            this.loggedIn = false;
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -40,6 +42,7 @@ public class Cliente {
         new Utilizador(user,pass).serialize(this.output);
         String status = this.input.readUTF();
         System.out.println(status);
+        if(status.equals("Login com sucesso!")) loggedIn = true;
         return status.equals("Login com sucesso!") || status.equals("Registo com sucesso!");
     }
 
@@ -50,6 +53,14 @@ public class Cliente {
         System.out.println(this.input.readUTF());
     }
 
+    public void checkWarnings() throws IOException {
+            output.writeUTF("check");
+            output.flush();
+            int num = input.readInt();
+            if (num != 0)
+                System.out.println(String.format("%d pessoas que estiveram na sua próximidade encontram-se infetadas. Por favor isole-se.", num));
+    }
+
 
     public static void main(String[] args) throws IOException {
         boolean loop = true;
@@ -58,7 +69,8 @@ public class Cliente {
 
 
         while (loop) {
-            switch (c.m.run(new String[]{"Registar User", "Login User", "Logout User","Update position","Check position"})) {
+            if(c.loggedIn) c.checkWarnings();
+            switch (c.m.run(new String[]{"Registar User", "Login User", "Logout User","Update position","Check position","Estou infetado!"})) {
                 case 1:
                     c.output.writeUTF("registo");
                     c.output.flush();
@@ -88,6 +100,11 @@ public class Cliente {
                     c.output.flush();
                     c.askPos();
                     break;
+                case 6:
+                    c.output.writeUTF("infected");
+                    c.output.flush();
+                    System.out.println("Obrigado pela cooperação!");
+                    loop = false;
             }
 
 

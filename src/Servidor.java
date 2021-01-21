@@ -26,7 +26,6 @@ public class Servidor{
             ServerSocket sSocket = new ServerSocket(12345);
             System.out.println("Server up!");
             while(true){
-
                 System.out.println("À espera de utilizadores...");
                 Socket socket = sSocket.accept();
                 System.out.println("Utilizador conectado!");

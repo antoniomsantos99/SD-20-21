@@ -37,7 +37,8 @@ public class Worker extends Thread implements Runnable {
 
         boolean loop = true;
         try {
-            while (loop && (res = in.readUTF()) != null) {
+            while (loop)
+                while((res = in.readUTF()) != null) {
                 switch(res){
 
                     case("registo"):
@@ -75,6 +76,17 @@ public class Worker extends Thread implements Runnable {
                         }
                         break;
 
+                    case("check"):
+                        if(user != null) {
+                            x = this.master.getUser(user).getInfecao();
+                            System.out.println(x);
+                            out.writeInt(x);
+                            out.flush();
+                            if (x != 0)
+                                this.master.getUser(user).resetInfecao();
+                        }
+                        break;
+
                     case("updatePos"):
                         x = in.readInt();
                         y = in.readInt();
@@ -103,6 +115,12 @@ public class Worker extends Thread implements Runnable {
                         }
 
                         break;
+
+                    case("infected"):
+                        if (utilizador != null) {
+                            this.master.getUser(utilizador.getUsername()).setEstadoInfecao(true);
+                            this.master.warnUsers(utilizador.getUsername());
+                        }
 
 
                     case("logout"):

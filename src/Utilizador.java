@@ -1,6 +1,7 @@
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class Utilizador {
@@ -11,6 +12,8 @@ public class Utilizador {
     private Boolean estadoInfecao;
     private Coordinates posicao;
     private ReentrantLock lockUser;
+    private HashSet<String> utilizadoresEmContacto;
+    private Integer infecao;
 
     /**
      * Contrutor sem parametros
@@ -23,6 +26,8 @@ public class Utilizador {
         this.posicao = null;
         this.estadoInfecao = false;
         this.lockUser = new ReentrantLock();
+        this.infecao = 0;
+        this.utilizadoresEmContacto = new HashSet<>();
     }
 
 
@@ -37,6 +42,8 @@ public class Utilizador {
         this.posicao = null;
         this.estadoInfecao = false;
         this.lockUser = new ReentrantLock();
+        this.infecao = 0;
+        this.utilizadoresEmContacto = new HashSet<>();
     }
 
     public String getUsername() {
@@ -90,6 +97,27 @@ public class Utilizador {
 
     public void setPosicao(Coordinates posicao) {
         this.posicao = posicao;
+    }
+
+    public void incWarn(){
+        this.infecao++;
+    }
+
+    public HashSet<String> getUtilizadoresEmContacto() {
+        return utilizadoresEmContacto;
+    }
+
+    public boolean addToUtilizadoresEmContacto(String username){
+        this.utilizadoresEmContacto.add(username);
+        return true;
+    }
+
+    public Integer getInfecao() {
+        return infecao;
+    }
+
+    public void resetInfecao() {
+        this.infecao = 0;
     }
 }
 

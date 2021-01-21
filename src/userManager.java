@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class userManager {
@@ -78,6 +79,7 @@ public class userManager {
             this.mapa[user.getPosicao().getX()][user.getPosicao().getY()].remove(user);
         }
         user.setPosicao(new Coordinates(x,y));
+        updateContacts(user.getUsername(),x,y);
         this.mapa[x][y].add(user);
         return true;
     }
@@ -85,6 +87,19 @@ public class userManager {
     public int checkPosition(int x, int y){
         if(mapa[x][y] == null) return 0;
         return mapa[x][y].size();
+    }
+
+    public void warnUsers(String username){
+        for(String user : this.getUser(username).getUtilizadoresEmContacto())
+            this.utilizadores.get(user).incWarn();
+    }
+
+    public void updateContacts(String username, int x, int y){
+        for(Utilizador user : this.mapa[x][y]){
+            this.getUser(username).addToUtilizadoresEmContacto(user.getUsername());
+            user.addToUtilizadoresEmContacto(username);
+        }
+        System.out.println(getUser(username).getUtilizadoresEmContacto());
     }
 }
 
