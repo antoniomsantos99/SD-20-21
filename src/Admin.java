@@ -1,11 +1,8 @@
 import java.io.*;
-import java.net.UnknownHostException;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Scanner;
 
-public class Cliente {
+public class Admin {
     private Socket socket;
     private DataInputStream input;
     private DataOutputStream output;
@@ -20,7 +17,7 @@ public class Cliente {
      * @param hostname Nome do host
      * @param porta    Nmumero do porto
      */
-    public Cliente(String hostname, int porta) {
+    public Admin(String hostname, int porta) {
         try {
             this.username = null;
             this.socket = new Socket(hostname, porta);
@@ -54,11 +51,11 @@ public class Cliente {
     }
 
     public void checkWarnings() throws IOException {
-            output.writeUTF("check");
-            output.flush();
-            int num = input.readInt();
-            if (num != 0)
-                System.out.println(String.format("%d pessoas que estiveram na sua próximidade encontram-se infetadas. Por favor isole-se.\n", num));
+        output.writeUTF("check");
+        output.flush();
+        int num = input.readInt();
+        if (num != 0)
+            System.out.println(String.format("%d pessoas que estiveram na sua próximidade encontram-se infetadas. Por favor isole-se.\n", num));
     }
 
     public void getMap() throws IOException {
@@ -70,7 +67,7 @@ public class Cliente {
 
     public static void main(String[] args) throws IOException {
         boolean loop = true;
-        Cliente c = new Cliente("127.0.0.1", 12345);
+        Admin c = new Admin("127.0.0.1", 23456);
 
         while (loop) {
             if(!c.loggedIn) {
@@ -94,7 +91,7 @@ public class Cliente {
 
             else {
                 c.checkWarnings();
-                switch (c.m.run(new String[]{"Logout", "Atualizar posição", "Verificar o nº de utilizadores numa posição", "Notificar infeção ao servidor", "Receber notificação quando uma localização estiver vazia"})) {
+                switch (c.m.run(new String[]{"Logout", "Atualizar posição", "Verificar o nº de utilizadores numa posição", "Notificar infeção ao servidor", "Receber notificação quando uma localização estiver vazia", "Download do mapa das visitas"})) {
                     case 1:
                         c.output.writeUTF("logout");
                         loop = false;
@@ -121,11 +118,16 @@ public class Cliente {
                         c.output.flush();
                         c.askPos();
                         break;
+                    case 6:
+                        c.output.writeUTF("download");
+                        c.output.flush();
+                        c.getMap();
+                        break;
                 }
-
-                }
-
 
             }
+
+
         }
     }
+}

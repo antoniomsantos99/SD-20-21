@@ -124,15 +124,6 @@ public class Worker extends Thread implements Runnable {
                         out.flush();
                         break;
 
-                    case("download"):
-                        int[][][] mapa = this.master.downloadMap();
-                        for(int i = 0;i<master.getDIM();i++)
-                            for(int j = 0;j< master.getDIM();j++)
-                                out.writeUTF(String.format("Na posição (%d,%d) temos %d utilizadores e %d infetados\n",i,j,mapa[i][j][0],mapa[i][j][1]));
-                        out.writeUTF("endDownload");
-                        out.flush();
-                            break;
-
                     case("infected"):
                         if (utilizador != null) {
                             this.master.getUser(utilizador.getUsername()).setEstadoInfecao(true);
@@ -158,4 +149,28 @@ public class Worker extends Thread implements Runnable {
 }
 
 
+class Listener implements Runnable {
+    private ServerSocket clSocket;
+    private userManager master;
 
+    public Listener(ServerSocket clSocket, userManager master) {
+        this.clSocket = clSocket;
+        this.master = master;
+    }
+
+    public void run () {
+        try {
+            while (true) {
+                Socket socket = clSocket.accept();
+                System.out.println("Utilizador conetado!\n");
+
+                Thread worker = new Thread(new Worker(socket, master));
+                worker.start();
+            }
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+}

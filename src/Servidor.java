@@ -23,13 +23,25 @@ public class Servidor{
      */
     public void startup(){
         try{
-            ServerSocket sSocket = new ServerSocket(12345);
-            System.out.println("Server up! À espera de utilizadores...");
+            ServerSocket clientSocket = new ServerSocket(12345);
+            ServerSocket adminSocket = new ServerSocket(23456);
+            System.out.println("Server up! À espera de utilizadores...\n");
+
             while(true){
-                Socket socket = sSocket.accept();
-                System.out.println("Utilizador conetado!");
-                Thread t=new Thread(new Worker(socket,master));
-                t.start();
+                Thread listener = new Thread(new Listener(clientSocket, master));
+                Thread adminListener = new Thread(new AdminListener(adminSocket, master));
+
+                listener.start();
+                adminListener.start();
+
+                try {
+                    listener.join();
+                    adminListener.join();
+
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
             }
         }catch(IOException e){
             System.out.println(e.getMessage());
