@@ -124,10 +124,11 @@ public class AdminWorker extends Thread implements Runnable {
                             break;
 
                         case("download"):
+                            System.out.println("Teste");
                             int[][][] mapa = this.master.downloadMap();
                             for(int i = 0;i<master.getDIM();i++)
                                 for(int j = 0;j< master.getDIM();j++)
-                                    out.writeUTF(String.format("Na posição (%d,%d) temos %d utilizadores e %d infetados\n",i,j,mapa[i][j][0],mapa[i][j][1]));
+                                    out.writeUTF(String.format("Na posição (%d,%d) temos %d utilizadores e %d infetados",i,j,mapa[i][j][0],mapa[i][j][1]));
                             out.writeUTF("endDownload");
                             out.flush();
                             break;
@@ -172,7 +173,7 @@ class AdminListener implements Runnable {
                 Socket socket = adSocket.accept();
                 System.out.println("Admin conetado!\n");
 
-                Thread worker = new Thread(new Worker(socket, master));
+                Thread worker = new Thread(new AdminWorker(socket, master));
                 worker.start();
             }
         }
