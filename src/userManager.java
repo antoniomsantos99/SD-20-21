@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -9,6 +10,7 @@ public class userManager {
     private HashMap<String, Utilizador> utilizadores; // Key: username | Value: Objeto do Utilizador
     private Integer DIM; // Dimensão do mapa
     private ArrayList<Utilizador>[][] mapa; //Localizacao dos users (talvez mudar)
+    private HashSet<Utilizador>[][] historico; //Localizacao dos users (talvez mudar)
     private Condition[][] mapFlags; //Matriz com as condições (empty/notEmpty)
     private ReentrantReadWriteLock mapLock; //Lock do hashmap dos utilizadores
     private Lock readLock, writeLock;
@@ -18,6 +20,7 @@ public class userManager {
         this.DIM = 10;
         this.mapa = new ArrayList[DIM][DIM];
         this.mapFlags = new Condition[DIM][DIM];
+        this.historico= new HashSet[DIM][DIM];
         this.mapLock = new ReentrantReadWriteLock();
         this.readLock = mapLock.readLock();
         this.writeLock = mapLock.writeLock();
@@ -103,6 +106,7 @@ public class userManager {
         try {
             if (mapa[x][y] == null) {
                 mapa[x][y] = new ArrayList<Utilizador>();
+                historico[x][y] = new HashSet<Utilizador>();
                 mapFlags[x][y] = writeLock.newCondition();
             }
             if (user.getPosicao() != null) {
@@ -115,6 +119,7 @@ public class userManager {
             user.setPosicao(new Coordinates(x, y));
             updateContacts(user.getUsername(), x, y);
             this.mapa[x][y].add(user);
+            this.historico[x][y].add(user);
             return true;
         } finally {
             this.writeLock.unlock();
@@ -202,6 +207,20 @@ public class userManager {
         } finally {
             this.writeLock.unlock();
         }
+    }
+
+    public int[][][] downloadMap(){
+        int[][][] map = new int[DIM][DIM][2];
+        for(int i = 0;i<DIM;i++)
+            for(int j = 0;j<DIM;j++){
+                if(this.historico[i][j] != null) {
+                    map[i][j][1] = (int) this.historico[i][j].stream().filter(u -> u.getEstadoInfecao()).count();
+                    map[i][j][0] = (int) this.historico[i][j].stream().filter(u -> !u.getEstadoInfecao()).count();
+                }
+                else
+                    map[i][j] = new int[]{0, 0};
+            }
+        return map;
     }
 }
 

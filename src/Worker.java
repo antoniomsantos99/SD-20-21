@@ -124,6 +124,15 @@ public class Worker extends Thread implements Runnable {
                         out.flush();
                         break;
 
+                    case("download"):
+                        int[][][] mapa = this.master.downloadMap();
+                        for(int i = 0;i<master.getDIM();i++)
+                            for(int j = 0;j< master.getDIM();j++)
+                                out.writeUTF(String.format("Na posicao (%d,%d) temos %d users e %d infetados",i,j,mapa[i][j][0],mapa[i][j][1]));
+                        out.writeUTF("endDownload");
+                        out.flush();
+                            break;
+
                     case("infected"):
                         if (utilizador != null) {
                             this.master.getUser(utilizador.getUsername()).setEstadoInfecao(true);

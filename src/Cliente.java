@@ -61,6 +61,11 @@ public class Cliente {
                 System.out.println(String.format("%d pessoas que estiveram na sua próximidade encontram-se infetadas. Por favor isole-se.", num));
     }
 
+    public void getMap() throws IOException {
+        String read;
+        while(!(read =input.readUTF()).equals("endDownload"))
+            System.out.println(read);
+    }
 
     public static void main(String[] args) throws IOException {
         boolean loop = true;
@@ -68,7 +73,7 @@ public class Cliente {
 
         while (loop) {
             if(c.loggedIn) c.checkWarnings();
-            switch (c.m.run(new String[]{"Registar User", "Login User", "Logout User","Update position","Check position","Estou infetado!","Notify when empty"})) {
+            switch (c.m.run(new String[]{"Registar User", "Login User", "Logout User","Update position","Check position","Estou infetado!","Notify when empty","Download mapS"})) {
                 case 1:
                     c.output.writeUTF("registo");
                     c.output.flush();
@@ -108,6 +113,13 @@ public class Cliente {
                     c.output.writeUTF("notify");
                     c.output.flush();
                     c.askPos();
+                    break;
+                case 8:
+                    c.output.writeUTF("download");
+                    c.output.flush();
+                    c.getMap();
+                    break;
+
             }
 
 
