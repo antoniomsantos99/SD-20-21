@@ -68,7 +68,7 @@ public class Cliente {
 
         while (loop) {
             if(c.loggedIn) c.checkWarnings();
-            switch (c.m.run(new String[]{"Registar User", "Login User", "Logout User","Update position","Check position","Estou infetado!"})) {
+            switch (c.m.run(new String[]{"Registar User", "Login User", "Logout User","Update position","Check position","Estou infetado!","Notify when empty"})) {
                 case 1:
                     c.output.writeUTF("registo");
                     c.output.flush();
@@ -103,7 +103,13 @@ public class Cliente {
                     c.output.flush();
                     System.out.println("Obrigado pela cooperação!");
                     loop = false;
+                    break;
+                case 7:
+                    c.output.writeUTF("notify");
+                    c.output.flush();
+                    c.askPos();
             }
+
 
 
         }

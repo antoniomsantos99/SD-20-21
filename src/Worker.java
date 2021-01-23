@@ -116,6 +116,14 @@ public class Worker extends Thread implements Runnable {
 
                         break;
 
+                    case("notify"):
+                        x = in.readInt();
+                        y = in.readInt();
+                        this.master.waitUntilEmpty(x,y);
+                        out.writeUTF("Posição vazia!");
+                        out.flush();
+                        break;
+
                     case("infected"):
                         if (utilizador != null) {
                             this.master.getUser(utilizador.getUsername()).setEstadoInfecao(true);

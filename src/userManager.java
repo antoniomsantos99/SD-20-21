@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -8,6 +9,7 @@ public class userManager {
     private HashMap<String, Utilizador> utilizadores; // Key: username | Value: Objeto do Utilizador
     private Integer DIM; // Dimensão do mapa
     private ArrayList<Utilizador>[][] mapa; //Localizacao dos users (talvez mudar)
+    private Condition[][] mapFlags; //Matriz com as condições (empty/notEmpty)
     private ReentrantReadWriteLock mapLock; //Lock do hashmap dos utilizadores
     private Lock readLock, writeLock;
 
@@ -15,6 +17,7 @@ public class userManager {
         this.utilizadores = new HashMap<String, Utilizador>();
         this.DIM = 10;
         this.mapa = new ArrayList[DIM][DIM];
+        this.mapFlags = new Condition[DIM][DIM];
         this.mapLock = new ReentrantReadWriteLock();
         this.readLock = mapLock.readLock();
         this.writeLock = mapLock.writeLock();
@@ -98,9 +101,16 @@ public class userManager {
     public boolean updatePosition(Utilizador user, int x, int y) {
         this.writeLock.lock();
         try {
-            if (mapa[x][y] == null) mapa[x][y] = new ArrayList<Utilizador>();
+            if (mapa[x][y] == null) {
+                mapa[x][y] = new ArrayList<Utilizador>();
+                mapFlags[x][y] = writeLock.newCondition();
+            }
             if (user.getPosicao() != null) {
                 this.mapa[user.getPosicao().getX()][user.getPosicao().getY()].remove(user);
+                if(this.mapa[user.getPosicao().getX()][user.getPosicao().getY()].size() == 0) {
+                    mapFlags[user.getPosicao().getX()][user.getPosicao().getY()].signalAll();
+                    System.out.println("Signal sent");
+                }
             }
             user.setPosicao(new Coordinates(x, y));
             updateContacts(user.getUsername(), x, y);
@@ -169,9 +179,27 @@ public class userManager {
         this.writeLock.lock();
         try {
             this.mapa[user.getPosicao().getX()][user.getPosicao().getY()].remove(user);
+            if(this.mapa[user.getPosicao().getX()][user.getPosicao().getY()].size() == 0) mapFlags[user.getPosicao().getX()][user.getPosicao().getY()].signalAll();
             this.getUser(user.getUsername()).unlockUser();
         }
         finally {
+            this.writeLock.unlock();
+        }
+    }
+
+    /**
+     * Espera até a posição estar vazia
+     * @param x Coordenada X
+     * @param y Coordenada Y
+     */
+    public void waitUntilEmpty(int x, int y) {
+        this.writeLock.lock();
+        try {
+            while(this.mapa[x][y] != null && this.mapa[x][y].size() != 0)
+                mapFlags[x][y].await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } finally {
             this.writeLock.unlock();
         }
     }
