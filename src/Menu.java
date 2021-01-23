@@ -19,7 +19,7 @@ public class Menu {
             int choice = sc.nextInt();
             return choice;
         }catch(Exception e){
-            System.out.println("Error: Invalid Input.");
+            System.out.println("Erro: Input inválido.\n");
             return run(question);
         }
     }
@@ -31,7 +31,7 @@ public class Menu {
      */
     public int run(String[] options){
         try{
-            System.out.println("Please Select an option:");
+            System.out.println("Por favor selecione uma opção:");
             for(int i = 0 ; i< options.length ; i++){
                 System.out.println(String.format("[%d] - %s", i+1, options[i]));
             }
@@ -40,7 +40,7 @@ public class Menu {
             if(choice-1 < 0 || choice-1 > options.length) throw new IllegalArgumentException();
             return choice;
         }catch(Exception e){
-            System.out.println("Error: Invalid Input.");
+            System.out.println("EErro: Input inválido.\n");
             return run(options);
         }
     }
@@ -62,7 +62,7 @@ public class Menu {
             if(choice < 0 || choice > options.length) throw new IllegalArgumentException();
             return choice;
         }catch(Exception e){
-            System.out.println("Error: Invalid Input.");
+            System.out.println("Erro: Input inválido.\n");
             return run(question, options);
         }
     }

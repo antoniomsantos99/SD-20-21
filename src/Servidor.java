@@ -24,11 +24,10 @@ public class Servidor{
     public void startup(){
         try{
             ServerSocket sSocket = new ServerSocket(12345);
-            System.out.println("Server up!");
+            System.out.println("Server up! À espera de utilizadores...");
             while(true){
-                System.out.println("À espera de utilizadores...");
                 Socket socket = sSocket.accept();
-                System.out.println("Utilizador conectado!");
+                System.out.println("Utilizador conetado!");
                 Thread t=new Thread(new Worker(socket,master));
                 t.start();
             }

@@ -43,11 +43,11 @@ public class Worker extends Thread implements Runnable {
 
                     case("registo"):
                         if(this.master.registarUtilizador(new Utilizador().deserialize(this.in))){
-                            out.writeUTF("Registo com sucesso!");
+                            out.writeUTF("Registo com sucesso!\n");
                             out.flush();
                         }
                         else {
-                            out.writeUTF("Registo sem sucesso");
+                            out.writeUTF("Registo sem sucesso\n");
                             out.flush();
                         }
                         break;
@@ -59,19 +59,19 @@ public class Worker extends Thread implements Runnable {
                         if(this.master.loginUtilizador(user,pass)) {
                             if(this.utilizador != null) this.utilizador.unlockUser();
                             this.utilizador = this.master.getUser(user);
-                            out.writeUTF("Login com sucesso!");
+                            out.writeUTF("Login com sucesso!\n");
                             out.flush();
                         }
                         else{
                             if (this.master.getUser(user) == null) {
-                                out.writeUTF("User não existe.");
+                                out.writeUTF("Utilizador não existe.\n");
                                 out.flush();
                             }
                             else if (this.master.getUser(user).checkLock()){
-                                out.writeUTF("User já em utilização.");
+                                out.writeUTF("Utilizador já deu login.\n");
                                 out.flush();}
                             else{
-                                out.writeUTF("Password incorreta.");
+                                out.writeUTF("Password incorreta.\n");
                                 out.flush();}
                         }
                         break;
@@ -92,11 +92,11 @@ public class Worker extends Thread implements Runnable {
                         y = in.readInt();
                         if(0<=x && x<master.getDIM() && 0<=y && y<master.getDIM()){
                             master.updatePosition(utilizador,x,y);
-                            out.writeUTF("Posição atualizada!");
+                            out.writeUTF("Posição atualizada!\n");
                             out.flush();
                         }
                         else{
-                            out.writeUTF("Posição Invalida!");
+                            out.writeUTF("Posição inválida!\n");
                             out.flush();
                         }
 
@@ -106,11 +106,11 @@ public class Worker extends Thread implements Runnable {
                         x = in.readInt();
                         y = in.readInt();
                         if(0<=x && x<master.getDIM() && 0<=y && y<master.getDIM()){
-                            out.writeUTF(String.format("De momento estão %d pessoas na posição (%d,%d)",master.checkPosition(x,y),x,y));
+                            out.writeUTF(String.format("De momento estão %d pessoas na posição (%d,%d)\n",master.checkPosition(x,y),x,y));
                             out.flush();
                         }
                         else{
-                            out.writeUTF("Posição Invalida!");
+                            out.writeUTF("Posição inválida!\n");
                             out.flush();
                         }
 
@@ -120,7 +120,7 @@ public class Worker extends Thread implements Runnable {
                         x = in.readInt();
                         y = in.readInt();
                         this.master.waitUntilEmpty(x,y);
-                        out.writeUTF("Posição vazia!");
+                        out.writeUTF(String.format("Posição (%d, %d) vazia!\n", x, y));
                         out.flush();
                         break;
 
@@ -128,7 +128,7 @@ public class Worker extends Thread implements Runnable {
                         int[][][] mapa = this.master.downloadMap();
                         for(int i = 0;i<master.getDIM();i++)
                             for(int j = 0;j< master.getDIM();j++)
-                                out.writeUTF(String.format("Na posicao (%d,%d) temos %d users e %d infetados",i,j,mapa[i][j][0],mapa[i][j][1]));
+                                out.writeUTF(String.format("Na posição (%d,%d) temos %d utilizadores e %d infetados\n",i,j,mapa[i][j][0],mapa[i][j][1]));
                         out.writeUTF("endDownload");
                         out.flush();
                             break;
