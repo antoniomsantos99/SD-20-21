@@ -89,9 +89,10 @@ public class Cliente {
                             c.askPos();
                         }
                         break;
+                }
             }
 
-            if(c.loggedIn) {
+            else {
                 c.checkWarnings();
                 switch (c.m.run(new String[]{"Logout", "Atualizar posição", "Verificar o nº de utilizadores numa posição", "Notificar infeção ao servidor", "Receber notificação quando uma localização estiver vazia", "Download do mapa das visitas"})) {
                     case 1:
@@ -103,7 +104,7 @@ public class Cliente {
                         c.output.writeUTF("updatePos");
                         c.output.flush();
                         c.askPos();
-                        c.m.run(new String[]{"Logout", "Atualizar posição", "Verificar o nº de utilizadores numa posição", "Notificar infeção ao servidor", "Receber notificação quando uma localização estiver vazia", "Download do mapa das visitas"});
+                        break;
                     case 3:
                         c.output.writeUTF("checkPos");
                         c.output.flush();
@@ -133,4 +134,3 @@ public class Cliente {
             }
         }
     }
-}

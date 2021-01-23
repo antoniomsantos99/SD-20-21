@@ -215,7 +215,7 @@ public class userManager {
             for(int j = 0;j<DIM;j++){
                 if(this.historico[i][j] != null) {
                     map[i][j][1] = (int) this.historico[i][j].stream().filter(u -> u.getEstadoInfecao()).count();
-                    map[i][j][0] = (int) this.historico[i][j].stream().filter(u -> !u.getEstadoInfecao()).count();
+                    map[i][j][0] = this.historico[i][j].size() - map[i][j][1];
                 }
                 else
                     map[i][j] = new int[]{0, 0};
