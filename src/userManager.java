@@ -18,7 +18,6 @@ public class userManager {
         this.mapLock = new ReentrantReadWriteLock();
         this.readLock = mapLock.readLock();
         this.writeLock = mapLock.writeLock();
-
     }
 
     /**
@@ -41,7 +40,6 @@ public class userManager {
 
     /**
      * Login de um utilizador
-     *
      * @param username Nome utilizador
      * @param password Password utilizador
      * @return True se login com sucesso, false caso contrario

@@ -122,7 +122,6 @@ public class Worker extends Thread implements Runnable {
                             this.master.warnUsers(utilizador.getUsername());
                         }
 
-
                     case("logout"):
                         if(utilizador != null) {
                             this.master.userLogout(utilizador);

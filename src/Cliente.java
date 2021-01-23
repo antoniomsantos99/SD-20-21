@@ -66,8 +66,6 @@ public class Cliente {
         boolean loop = true;
         Cliente c = new Cliente("127.0.0.1", 12345);
 
-
-
         while (loop) {
             if(c.loggedIn) c.checkWarnings();
             switch (c.m.run(new String[]{"Registar User", "Login User", "Logout User","Update position","Check position","Estou infetado!"})) {

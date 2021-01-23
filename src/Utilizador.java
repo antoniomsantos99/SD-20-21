@@ -44,23 +44,32 @@ public class Utilizador {
         this.infecao = 0;
         this.utilizadoresEmContacto = new HashSet<>();
     }
-
+    /**
+     * Saca username do utilizador
+     * @return Username de utilizador
+     */
     public String getUsername() {
         return username;
     }
 
+    /**
+     * Saca a password do utilizador
+     * @return Password de utilizador
+     */
     public String getPassword() {
         return password;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
+    /**
+     * Saca o estado de infeção do utilizador
+     * @return True se o utilizador estiver infetado False caso contrário
+     */
+    public Boolean getEstadoInfecao() { return estadoInfecao; }
 
-    public Boolean getEstadoInfecao() {
-        return estadoInfecao;
-    }
-
+    /**
+     * Modifica o estado de infeção do utilizador
+     * @return True se o utilizador estiver infetado False caso contrário
+     */
     public void setEstadoInfecao(Boolean estadoInfecao) {
         this.estadoInfecao = estadoInfecao;
     }
