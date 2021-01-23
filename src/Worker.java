@@ -125,7 +125,7 @@ public class Worker extends Thread implements Runnable {
 
                     case("logout"):
                         if(utilizador != null) {
-                            this.master.getUser(utilizador.getUsername()).unlockUser();
+                            this.master.userLogout(utilizador);
                             utilizador = null;
                         }
                         clSocket.close();

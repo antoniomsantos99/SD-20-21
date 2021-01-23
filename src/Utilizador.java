@@ -3,6 +3,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class Utilizador {
 
@@ -11,21 +12,19 @@ public class Utilizador {
     private String password;
     private Boolean estadoInfecao;
     private Coordinates posicao;
-    private ReentrantLock lockUser;
+    private ReentrantLock loginLock;
     private HashSet<String> utilizadoresEmContacto;
     private Integer infecao;
 
     /**
      * Contrutor sem parametros
-     * @param username Nome utilizador
-     * @param password Password utilizador
      */
     public Utilizador() {
         this.username = null;
         this.password = null;
         this.posicao = null;
         this.estadoInfecao = false;
-        this.lockUser = new ReentrantLock();
+        this.loginLock = new ReentrantLock();
         this.infecao = 0;
         this.utilizadoresEmContacto = new HashSet<>();
     }
@@ -41,7 +40,7 @@ public class Utilizador {
         this.password = password;
         this.posicao = null;
         this.estadoInfecao = false;
-        this.lockUser = new ReentrantLock();
+        this.loginLock = new ReentrantLock();
         this.infecao = 0;
         this.utilizadoresEmContacto = new HashSet<>();
     }
@@ -67,21 +66,20 @@ public class Utilizador {
     }
 
     public void unlockUser() {
-        this.lockUser.unlock();
+        this.loginLock.unlock();
     }
 
     public void lockUser() {
-        this.lockUser.lock();
+        this.loginLock.lock();
     }
 
     public boolean checkLock() {
-        return this.lockUser.isLocked();
+        return this.loginLock.isLocked();
     }
 
     public void serialize(DataOutputStream out) throws IOException {
         out.writeUTF(this.username);
         out.writeUTF(this.password);
-
         out.flush();
     }
 
