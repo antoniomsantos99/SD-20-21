@@ -63,27 +63,26 @@ public class Worker extends Thread implements Runnable {
                             out.flush();
                         }
                         else{
-                            if (this.master.getUser(user) == null) {
+                            if (this.master.getUser(user) == null)
                                 out.writeUTF("Utilizador não existe.\n");
-                                out.flush();
-                            }
-                            else if (this.master.getUser(user).checkLock()){
+                            else if (this.master.getUser(user).checkLock())
                                 out.writeUTF("Utilizador já deu login.\n");
-                                out.flush();}
-                            else{
+                            else if (!this.master.getUser(user).getPassword().equals(pass))
                                 out.writeUTF("Password incorreta.\n");
-                                out.flush();}
+                            else out.writeUTF("Utilizador encontra-se infetado.\n");
+
+                            out.flush();
                         }
                         break;
 
                     case("check"):
                         if(user != null) {
-                            x = this.master.getUser(user).getInfecao();
+                            x = this.utilizador.getInfecao();
                             System.out.println(x);
                             out.writeInt(x);
                             out.flush();
                             if (x != 0)
-                                this.master.getUser(user).resetInfecao();
+                                this.utilizador.resetInfecao();
                         }
                         break;
 
@@ -126,7 +125,7 @@ public class Worker extends Thread implements Runnable {
 
                     case("infected"):
                         if (utilizador != null) {
-                            this.master.getUser(utilizador.getUsername()).setEstadoInfecao(true);
+                            this.utilizador.setEstadoInfecao(true);
                             this.master.warnUsers(utilizador.getUsername());
                         }
 
@@ -143,7 +142,8 @@ public class Worker extends Thread implements Runnable {
             }
 
         } catch (IOException e) {
-            e.printStackTrace();
+            if(utilizador != null) utilizador.unlockUser();
+            Thread.currentThread().interrupt();
         }
     }
 }

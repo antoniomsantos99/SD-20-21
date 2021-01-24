@@ -51,11 +51,12 @@ public class userManager {
      * @return True se login com sucesso, false caso contrario
      */
     public boolean loginUtilizador(String username, String password) {
+        System.out.println(this.utilizadores.get(username).getEstadoInfecao());
         this.writeLock.lock();
         try {
             if (this.utilizadores.containsKey(username)
                     && this.utilizadores.get(username).getPassword().equals(password)
-                    && !this.utilizadores.get(username).checkLock()) {
+                    && !this.utilizadores.get(username).checkLock() && !this.utilizadores.get(username).getEstadoInfecao()) {
 
                 this.utilizadores.get(username).lockUser();
 
