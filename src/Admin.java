@@ -120,6 +120,7 @@ public class Admin {
                         break;
                     case 6:
                         c.output.writeUTF("download");
+                        c.output.writeInt(c.m.run(new String[]{"Vista Detalhada","Vista Compacta (não recomendado para mapas de grandes dimensões)"}));
                         c.output.flush();
                         c.getMap();
                         break;

@@ -77,7 +77,6 @@ public class AdminWorker extends Thread implements Runnable {
                         case("check"):
                             if(user != null) {
                                 x = this.utilizador.getInfecao();
-                                System.out.println(x);
                                 out.writeInt(x);
                                 out.flush();
                                 if (x != 0)
@@ -117,17 +116,33 @@ public class AdminWorker extends Thread implements Runnable {
                         case("notify"):
                             x = in.readInt();
                             y = in.readInt();
-                            this.master.waitUntilEmpty(x,y);
-                            out.writeUTF(String.format("Posição (%d, %d) vazia!\n", x, y));
+                            if(utilizador.getPosicao().getX() == x && utilizador.getPosicao().getY() == y)
+                                out.writeUTF("Você já está na posição escolhida");
+                            else {
+                                this.master.waitUntilEmpty(x, y);
+                                out.writeUTF(String.format("Posição (%d, %d) vazia!\n", x, y));
+                            }
                             out.flush();
                             break;
 
                         case("download"):
-                            System.out.println("Teste");
                             int[][][] mapa = this.master.downloadMap();
-                            for(int i = 0;i<master.getDIM();i++)
-                                for(int j = 0;j< master.getDIM();j++)
-                                    out.writeUTF(String.format("Na posição (%d,%d) temos %d utilizadores e %d infetados",i,j,mapa[i][j][0],mapa[i][j][1]));
+                            if(in.readInt() == 2) {
+                                String buf = new String();
+
+                                for (int i = 0; i < master.getDIM(); i++) {
+                                    buf = "";
+                                    for (int j = 0; j < master.getDIM(); j++) {
+                                        buf += String.format("(%d s,%d i) ", mapa[i][j][0], mapa[i][j][1]);
+                                    }
+                                    out.writeUTF(buf);
+                                }
+                            }
+                            else {
+                                for(int i = 0;i<master.getDIM();i++)
+                                    for(int j = 0;j< master.getDIM();j++)
+                                        out.writeUTF(String.format("Na posição (%d,%d) temos %d utilizadores e %d infetados",i,j,mapa[i][j][0],mapa[i][j][1]));
+                            }
                             out.writeUTF("endDownload");
                             out.flush();
                             break;

@@ -51,7 +51,6 @@ public class userManager {
      * @return True se login com sucesso, false caso contrario
      */
     public boolean loginUtilizador(String username, String password) {
-        System.out.println(this.utilizadores.get(username).getEstadoInfecao());
         this.writeLock.lock();
         try {
             if (this.utilizadores.containsKey(username)
@@ -114,7 +113,6 @@ public class userManager {
                 this.mapa[user.getPosicao().getX()][user.getPosicao().getY()].remove(user);
                 if(this.mapa[user.getPosicao().getX()][user.getPosicao().getY()].size() == 0) {
                     mapFlags[user.getPosicao().getX()][user.getPosicao().getY()].signalAll();
-                    System.out.println("Signal sent");
                 }
             }
             user.setPosicao(new Coordinates(x, y));

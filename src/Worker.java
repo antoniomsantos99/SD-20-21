@@ -78,7 +78,6 @@ public class Worker extends Thread implements Runnable {
                     case("check"):
                         if(user != null) {
                             x = this.utilizador.getInfecao();
-                            System.out.println(x);
                             out.writeInt(x);
                             out.flush();
                             if (x != 0)
@@ -118,8 +117,12 @@ public class Worker extends Thread implements Runnable {
                     case("notify"):
                         x = in.readInt();
                         y = in.readInt();
-                        this.master.waitUntilEmpty(x,y);
-                        out.writeUTF(String.format("Posição (%d, %d) vazia!\n", x, y));
+                        if(utilizador.getPosicao().getX() == x && utilizador.getPosicao().getY() == y)
+                            out.writeUTF("Você já está na posição escolhida");
+                        else {
+                            this.master.waitUntilEmpty(x, y);
+                            out.writeUTF(String.format("Posição (%d, %d) vazia!\n", x, y));
+                        }
                         out.flush();
                         break;
 
