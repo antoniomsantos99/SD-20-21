@@ -29,10 +29,16 @@ public class Cliente {
             this.m = new Menu();
             this.loggedIn = false;
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("Não foi possivel a conexão ao servidor. Por favor tente mais tarde!");
+            System.exit(0);
         }
     }
 
+    /**
+     * Pede dados de autênticação e envia-os para o servidor
+     *
+     * @return True se autenticou com sucesso, false caso contrário
+     */
     public boolean signUser() throws IOException {
         Scanner sc = new Scanner(System.in);
         System.out.print("Username: ");
@@ -46,6 +52,10 @@ public class Cliente {
         return status.equals("Login com sucesso!\n") || status.equals("Registo com sucesso!\n");
     }
 
+    /**
+     * Pede posição e envia para o servidor
+     *
+     */
     public void askPos() throws IOException {
         output.writeInt(m.run("Coordenada X: "));
         output.writeInt(m.run("Coordenada Y: "));
@@ -53,6 +63,11 @@ public class Cliente {
         System.out.println(this.input.readUTF());
     }
 
+
+    /**
+     * Pede numero de pessoas infetadas que contactaram com um utilizador
+     *
+     */
     public void checkWarnings() throws IOException {
             output.writeUTF("check");
             output.flush();
@@ -61,6 +76,10 @@ public class Cliente {
                 System.out.println(String.format("%d pessoas que estiveram na sua próximidade encontram-se infetadas. Por favor isole-se.\n", num));
     }
 
+    /**
+     * Lê mapa pedido e escreve no terminal
+     *
+     */
     public void getMap() throws IOException {
         String read;
         while(!(read =input.readUTF()).equals("endDownload"))

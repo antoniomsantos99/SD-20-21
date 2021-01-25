@@ -14,4 +14,9 @@ public class Coordinates {
     public int getY() {
         return y;
     }
+
+    public void setCoords(int x,int y) {
+        this.x = x;
+        this.y = y;
+    }
 }

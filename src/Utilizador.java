@@ -3,7 +3,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
+
 
 public class Utilizador {
 
@@ -104,6 +104,9 @@ public class Utilizador {
 
     public void setPosicao(Coordinates posicao) {
         this.posicao = posicao;
+    }
+    public void setPosicao(int x,int y) {
+        this.posicao.setCoords(x,y);
     }
 
     public void incWarn(){

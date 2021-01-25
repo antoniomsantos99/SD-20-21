@@ -20,7 +20,7 @@ public class userManager {
         this.DIM = 10;
         this.mapa = new ArrayList[DIM][DIM];
         this.mapFlags = new Condition[DIM][DIM];
-        this.historico= new HashSet[DIM][DIM];
+        this.historico = new HashSet[DIM][DIM];
         this.mapLock = new ReentrantReadWriteLock();
         this.readLock = mapLock.readLock();
         this.writeLock = mapLock.writeLock();
@@ -28,6 +28,7 @@ public class userManager {
 
     /**
      * Regista um utilizador
+     *
      * @param user Objeto do utilizador
      * @return Estado de conclusão
      */
@@ -46,6 +47,7 @@ public class userManager {
 
     /**
      * Login de um utilizador
+     *
      * @param username Nome utilizador
      * @param password Password utilizador
      * @return True se login com sucesso, false caso contrario
@@ -69,6 +71,7 @@ public class userManager {
 
     /**
      * Saca a informação de um utilizador
+     *
      * @param nome Nome do utilizador
      * @return Informação do utilizador
      */
@@ -83,6 +86,7 @@ public class userManager {
 
     /**
      * Saca a dimensão do mapa
+     *
      * @return Dimensão do mapa
      */
     public Integer getDIM() {
@@ -96,9 +100,10 @@ public class userManager {
 
     /**
      * Atualiza a posição do utilizador no mapa
+     *
      * @param user Objeto utilizador
-     * @param x Coordenada X de onde se quer mover
-     * @param y Coordenada Y de onde se quer mover
+     * @param x    Coordenada X de onde se quer mover
+     * @param y    Coordenada Y de onde se quer mover
      * @return Estado de conclusão
      */
     public boolean updatePosition(Utilizador user, int x, int y) {
@@ -111,11 +116,11 @@ public class userManager {
             }
             if (user.getPosicao() != null) {
                 this.mapa[user.getPosicao().getX()][user.getPosicao().getY()].remove(user);
-                if(this.mapa[user.getPosicao().getX()][user.getPosicao().getY()].size() == 0) {
+                if (this.mapa[user.getPosicao().getX()][user.getPosicao().getY()].size() == 0) {
                     mapFlags[user.getPosicao().getX()][user.getPosicao().getY()].signalAll();
                 }
             }
-            user.setPosicao(new Coordinates(x, y));
+            user.setPosicao(x,y);
             updateContacts(user.getUsername(), x, y);
             this.mapa[x][y].add(user);
             this.historico[x][y].add(user);
@@ -124,8 +129,10 @@ public class userManager {
             this.writeLock.unlock();
         }
     }
+
     /**
      * Conta os utilizadores numa posição do mapa
+     *
      * @param x Coordenada X de onde se quer contar
      * @param y Coordenada Y de onde se quer contar
      * @return Numero de utilizadores na posição referida
@@ -135,14 +142,14 @@ public class userManager {
         try {
             if (mapa[x][y] == null) return 0;
             return mapa[x][y].size();
-        }
-        finally {
+        } finally {
             this.readLock.unlock();
         }
     }
 
     /**
      * Avisa todos os utilizadores que contactaram com alguem infetado
+     *
      * @param username Nome do utilizador infetado
      */
     public void warnUsers(String username) {
@@ -150,17 +157,17 @@ public class userManager {
         try {
             for (String user : this.getUser(username).getUtilizadoresEmContacto())
                 this.utilizadores.get(user).incWarn();
-        }
-        finally {
+        } finally {
             this.writeLock.unlock();
         }
     }
 
     /**
      * Atualiza contactos que um utilizador obteve segundo a sua posição
+     *
      * @param username Nome do utilizador
-     * @param x Coordenada X onde o utilizador está
-     * @param y Coordenada Y onde o utilizador está
+     * @param x        Coordenada X onde o utilizador está
+     * @param y        Coordenada Y onde o utilizador está
      */
     public void updateContacts(String username, int x, int y) {
         this.writeLock.lock();
@@ -169,37 +176,38 @@ public class userManager {
                 this.getUser(username).addToUtilizadoresEmContacto(user.getUsername());
                 user.addToUtilizadoresEmContacto(username);
             }
-        }
-        finally {
+        } finally {
             this.writeLock.unlock();
         }
     }
 
     /**
      * Dá logout do utilizador
+     *
      * @param user Objeto do utilizador
      */
     public void userLogout(Utilizador user) {
         this.writeLock.lock();
         try {
             this.mapa[user.getPosicao().getX()][user.getPosicao().getY()].remove(user);
-            if(this.mapa[user.getPosicao().getX()][user.getPosicao().getY()].size() == 0) mapFlags[user.getPosicao().getX()][user.getPosicao().getY()].signalAll();
+            if (this.mapa[user.getPosicao().getX()][user.getPosicao().getY()].size() == 0)
+                mapFlags[user.getPosicao().getX()][user.getPosicao().getY()].signalAll();
             this.getUser(user.getUsername()).unlockUser();
-        }
-        finally {
+        } finally {
             this.writeLock.unlock();
         }
     }
 
     /**
      * Espera até a posição estar vazia
+     *
      * @param x Coordenada X
      * @param y Coordenada Y
      */
     public void waitUntilEmpty(int x, int y) {
         this.writeLock.lock();
         try {
-            while(this.mapa[x][y] != null && this.mapa[x][y].size() != 0)
+            while (this.mapa[x][y] != null && this.mapa[x][y].size() != 0)
                 mapFlags[x][y].await();
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -208,18 +216,27 @@ public class userManager {
         }
     }
 
-    public int[][][] downloadMap(){
-        int[][][] map = new int[DIM][DIM][2];
-        for(int i = 0;i<DIM;i++)
-            for(int j = 0;j<DIM;j++){
-                if(this.historico[i][j] != null) {
-                    map[i][j][1] = (int) this.historico[i][j].stream().filter(u -> u.getEstadoInfecao()).count();
-                    map[i][j][0] = this.historico[i][j].size() - map[i][j][1];
+    /**
+     * Saca o mapa para o administrador
+     *
+     * @return Matriz tridimensional com o numero de infetados e saudáveis em cada posição
+     */
+    public int[][][] downloadMap() {
+        this.readLock.lock();
+        try {
+            int[][][] map = new int[DIM][DIM][2];
+            for (int i = 0; i < DIM; i++)
+                for (int j = 0; j < DIM; j++) {
+                    if (this.historico[i][j] != null) {
+                        map[i][j][1] = (int) this.historico[i][j].stream().filter(u -> u.getEstadoInfecao()).count();
+                        map[i][j][0] = this.historico[i][j].size() - map[i][j][1];
+                    } else
+                        map[i][j] = new int[]{0, 0};
                 }
-                else
-                    map[i][j] = new int[]{0, 0};
-            }
-        return map;
+            return map;
+        } finally {
+            this.readLock.unlock();
+        }
     }
 }
 
