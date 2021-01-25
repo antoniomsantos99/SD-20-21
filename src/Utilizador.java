@@ -68,64 +68,112 @@ public class Utilizador {
 
     /**
      * Modifica o estado de infeção do utilizador
-     * @return True se o utilizador estiver infetado False caso contrário
      */
     public void setEstadoInfecao(Boolean estadoInfecao) {
         this.estadoInfecao = estadoInfecao;
     }
 
+    /**
+     * Desbloqueia o utilizador
+     */
     public void unlockUser() {
         this.loginLock.unlock();
     }
 
+
+    /**
+     * Bloqueia o utilizador
+     */
     public void lockUser() {
         this.loginLock.lock();
     }
 
+    /**
+     * Retorna o estado do lock
+     * @return True se o lock está bloqueado False caso contrário
+     */
     public boolean checkLock() {
         return this.loginLock.isLocked();
     }
 
+    /**
+     *Envia os dados de autenticação para o socket
+     */
     public void serialize(DataOutputStream out) throws IOException {
         out.writeUTF(this.username);
         out.writeUTF(this.password);
         out.flush();
     }
 
+    /**
+     * De acordo com os dados fornecidos pelo serivdor cria um utilizador
+     * @return Utilizador criado
+     */
     public static Utilizador deserialize(DataInputStream in) throws IOException {
         String username = in.readUTF();
         String password = in.readUTF();
         return new Utilizador(username, password);
     }
 
+    /**
+     * Devolve a posição de um Utilizador
+     * @return Posição do utilizador
+     */
     public Coordinates getPosicao() {
         return posicao;
     }
 
+    /**
+     * Modifica a posição de um Utilizador
+     * @param posicao Objeto coordenadas com a posição
+     */
     public void setPosicao(Coordinates posicao) {
         this.posicao = posicao;
     }
+
+    /**
+     * Modifica a posição de um Utilizador
+     * @param x Coordenada X
+     * @param y Coordenada Y
+     */
     public void setPosicao(int x,int y) {
         this.posicao.setCoords(x,y);
     }
 
+    /**
+     * Incrementa a variável de aviso de infeção
+     */
     public void incWarn(){
         this.infecao++;
     }
 
+    /**
+     * Devolve a lista de utilizadores cujo um utilizador teve em contacto
+     * @return Lista de utilizadores
+     */
     public HashSet<String> getUtilizadoresEmContacto() {
         return utilizadoresEmContacto;
     }
 
-    public boolean addToUtilizadoresEmContacto(String username){
+    /**
+     * Adiciona um username a uma  lista de utilizadores cujo um utilizador teve em contacto
+     * @oaram Username do utilizador pretendido
+     */
+    public void addToUtilizadoresEmContacto(String username){
         this.utilizadoresEmContacto.add(username);
-        return true;
     }
 
+    /**
+     * Adiciona um username a uma  lista de utilizadores cujo um utilizador teve em contacto
+     * @return Numero de pessoas infetadas que o utilizador esteve em contacto
+     */
     public Integer getInfecao() {
         return infecao;
     }
 
+    /**
+     * Reseta o contador de utilizadores infetados cujo um utilizador esteve em contacto
+     */
     public void resetInfecao() {
         this.infecao = 0;
     }
