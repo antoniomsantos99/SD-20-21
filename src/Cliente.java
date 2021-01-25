@@ -116,7 +116,7 @@ public class Cliente {
                 switch (cliente.m.run(new String[]{"Logout", "Atualizar posição", "Verificar o nº de utilizadores numa posição", "Notificar infeção ao servidor", "Receber notificação quando uma localização estiver vazia"})) {
                     case 1:
                         cliente.output.writeUTF("logout");
-                        loop = false;
+                        cliente.loggedIn = false;
                         cliente.output.flush();
                         break;
                     case 2:

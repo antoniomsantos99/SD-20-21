@@ -137,8 +137,6 @@ public class Worker extends Thread implements Runnable {
                             this.master.userLogout(utilizador);
                             utilizador = null;
                         }
-                        clSocket.close();
-                        loop = false;
                         break;
 
                 }
