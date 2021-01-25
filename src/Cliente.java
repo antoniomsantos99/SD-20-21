@@ -6,12 +6,12 @@ import java.util.Arrays;
 import java.util.Scanner;
 
 public class Cliente {
-    private Socket socket;
-    private DataInputStream input;
-    private DataOutputStream output;
-    private String username;
-    private Menu m;
-    private boolean loggedIn;
+    protected Socket socket;
+    protected DataInputStream input;
+    protected DataOutputStream output;
+    protected String username;
+    protected Menu m;
+    protected boolean loggedIn;
 
 
     /**
@@ -89,56 +89,56 @@ public class Cliente {
 
     public static void main(String[] args) throws IOException {
         boolean loop = true;
-        Cliente c = new Cliente("127.0.0.1", 12345);
+        Cliente cliente = new Cliente("127.0.0.1", 12345);
 
         while (loop) {
-            if(!c.loggedIn) {
-                switch (c.m.run(new String[]{"Registar utilizador", "Login"})) {
+            if(!cliente.loggedIn) {
+                switch (cliente.m.run(new String[]{"Registar utilizador", "Login"})) {
                     case 1:
-                        c.output.writeUTF("registo");
-                        c.output.flush();
-                        c.signUser();
+                        cliente.output.writeUTF("registo");
+                        cliente.output.flush();
+                        cliente.signUser();
                         break;
                     case 2:
-                        c.output.writeUTF("login");
-                        c.output.flush();
-                        if (c.signUser()) {
-                            c.output.writeUTF("updatePos");
-                            c.output.flush();
-                            c.askPos();
+                        cliente.output.writeUTF("login");
+                        cliente.output.flush();
+                        if (cliente.signUser()) {
+                            cliente.output.writeUTF("updatePos");
+                            cliente.output.flush();
+                            cliente.askPos();
                         }
                         break;
                 }
             }
 
             else {
-                c.checkWarnings();
-                switch (c.m.run(new String[]{"Logout", "Atualizar posição", "Verificar o nº de utilizadores numa posição", "Notificar infeção ao servidor", "Receber notificação quando uma localização estiver vazia"})) {
+                cliente.checkWarnings();
+                switch (cliente.m.run(new String[]{"Logout", "Atualizar posição", "Verificar o nº de utilizadores numa posição", "Notificar infeção ao servidor", "Receber notificação quando uma localização estiver vazia"})) {
                     case 1:
-                        c.output.writeUTF("logout");
+                        cliente.output.writeUTF("logout");
                         loop = false;
-                        c.output.flush();
+                        cliente.output.flush();
                         break;
                     case 2:
-                        c.output.writeUTF("updatePos");
-                        c.output.flush();
-                        c.askPos();
+                        cliente.output.writeUTF("updatePos");
+                        cliente.output.flush();
+                        cliente.askPos();
                         break;
                     case 3:
-                        c.output.writeUTF("checkPos");
-                        c.output.flush();
-                        c.askPos();
+                        cliente.output.writeUTF("checkPos");
+                        cliente.output.flush();
+                        cliente.askPos();
                         break;
                     case 4:
-                        c.output.writeUTF("infected");
-                        c.output.flush();
+                        cliente.output.writeUTF("infected");
+                        cliente.output.flush();
                         System.out.println("Obrigado pela cooperação!");
                         loop = false;
                         break;
                     case 5:
-                        c.output.writeUTF("notify");
-                        c.output.flush();
-                        c.askPos();
+                        cliente.output.writeUTF("notify");
+                        cliente.output.flush();
+                        cliente.askPos();
                         break;
                 }
 

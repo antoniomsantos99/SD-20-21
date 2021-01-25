@@ -2,74 +2,16 @@ import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;
 
-public class Admin {
-    private Socket socket;
-    private DataInputStream input;
-    private DataOutputStream output;
-    private String username;
-    private Menu m;
-    private boolean loggedIn;
-
+public class Admin extends Cliente{
 
     /**
      * Construtor por parametros
      *
      * @param hostname Nome do host
-     * @param porta    Nmumero do porto
+     * @param porta    Numero do porto
      */
     public Admin(String hostname, int porta) {
-        try {
-            this.username = null;
-            this.socket = new Socket(hostname, porta);
-            this.input = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
-            this.output = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
-            this.m = new Menu();
-            this.loggedIn = false;
-        } catch (IOException e) {
-            System.out.println("Não foi possivel a conexão ao servidor. Por favor tente mais tarde!");
-            System.exit(0);
-        }
-    }
-
-    /**
-     * Pede dados de autênticação e envia-os para o servidor
-     *
-     * @return True se autenticou com sucesso, false caso contrário
-     */
-    public boolean signUser() throws IOException {
-        Scanner sc = new Scanner(System.in);
-        System.out.print("Username: ");
-        String user = sc.nextLine();
-        System.out.print("Password: ");
-        String pass = sc.nextLine();
-        new Utilizador(user,pass).serialize(this.output);
-        String status = this.input.readUTF();
-        System.out.println(status);
-        if(status.equals("Login com sucesso!\n")) loggedIn = true;
-        return status.equals("Login com sucesso!\n") || status.equals("Registo com sucesso!\n");
-    }
-
-    /**
-     * Pede posição e envia para o servidor
-     *
-     */
-    public void askPos() throws IOException {
-        output.writeInt(m.run("Coordenada X: "));
-        output.writeInt(m.run("Coordenada Y: "));
-        output.flush();
-        System.out.println(this.input.readUTF());
-    }
-
-    /**
-     * Pede numero de pessoas infetadas que contactaram com um utilizador
-     *
-     */
-    public void checkWarnings() throws IOException {
-        output.writeUTF("check");
-        output.flush();
-        int num = input.readInt();
-        if (num != 0)
-            System.out.println(String.format("%d pessoas que estiveram na sua próximidade encontram-se infetadas. Por favor isole-se.\n", num));
+        super(hostname, porta);
     }
 
     /**
@@ -78,7 +20,7 @@ public class Admin {
      */
     public void getMap() throws IOException {
         String read;
-        while(!(read =input.readUTF()).equals("endDownload"))
+        while(!(read =this.input.readUTF()).equals("endDownload"))
             System.out.println(read);
         System.out.println("\n");
     }
@@ -86,7 +28,7 @@ public class Admin {
     public static void main(String[] args) throws IOException {
         boolean loop = true;
         Admin c = new Admin("127.0.0.1", 23456);
-
+        System.out.println(c.output);
         while (loop) {
             if(!c.loggedIn) {
                 switch (c.m.run(new String[]{"Registar utilizador", "Login"})) {

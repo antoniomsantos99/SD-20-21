@@ -137,7 +137,8 @@ public class Utilizador {
      * @param y Coordenada Y
      */
     public void setPosicao(int x,int y) {
-        this.posicao.setCoords(x,y);
+        if(this.posicao != null) this.posicao.setCoords(x,y);
+        else this.setPosicao(new Coordinates(x,y));
     }
 
     /**
